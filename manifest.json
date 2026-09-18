@@ -1,0 +1,9 @@
+{
+  "name": "Personal Finance Management",
+  "short_name": "Personal Finance",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f3f7f6",
+  "theme_color": "#0f766e",
+  "description": "Mobile-friendly personal income and expense management app."
+}
