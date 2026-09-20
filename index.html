@@ -92,6 +92,21 @@ function persist(){localStorage.setItem(KEY,JSON.stringify(records));$("localCou
 function toast(m){let t=$("toast");t.textContent=m;t.classList.add("show");clearTimeout(window.tt);window.tt=setTimeout(()=>t.classList.remove("show"),2800)}
 function render(){
  let inc=0,exp=0;records.forEach(r=>typeOf(r.type)==="Income"?inc+=+r.amount||0:exp+=+r.amount||0);
+ const now=new Date();
+const currentMonth=now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0");
+let monthInc=0,monthExp=0;
+records.forEach(r=>{
+  if(String(r.date||"").slice(0,7)===currentMonth){
+    if(typeOf(r.type)==="Income") monthInc+=Number(r.amount||0);
+    else monthExp+=Number(r.amount||0);
+  }
+});
+const mi=document.getElementById("monthIncome");
+const me=document.getElementById("monthExpense");
+const mb=document.getElementById("monthBalance");
+if(mi) mi.textContent="৳"+monthInc.toLocaleString("en-BD");
+if(me) me.textContent="৳"+monthExp.toLocaleString("en-BD");
+if(mb) mb.textContent="৳"+(monthInc-monthExp).toLocaleString("en-BD");
  $("totalIncome").textContent=money(inc);$("totalExpense").textContent=money(exp);$("balance").textContent=money(inc-exp);$("localCount").textContent=records.length;
  let q=$("search").value.trim().toLowerCase(),ft=$("filterType").value;
  let arr=records.filter(r=>(!q||[r.date,r.type,r.category,r.purpose,r.party,r.note].join(" ").toLowerCase().includes(q))&&(!ft||typeOf(r.type)===ft));
