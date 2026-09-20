@@ -62,48 +62,6 @@ input,select,textarea{width:100%;border:1px solid var(--b);border-radius:10px;pa
     <div id="monthBalance" class="value">৳0</div>
   </div>
 </div>
-<div class="card section">
-  <h2>📊 Monthly Report</h2>
-
-  <div class="two">
-    <div class="card stat income">
-      <div class="label">This Month Income</div>
-      <div id="monthIncome" class="value">৳0</div>
-    </div>
-
-    <div class="card stat expense">
-      <div class="label">This Month Expense</div>
-      <div id="monthExpense" class="value">৳0</div>
-    </div>
-  </div>
-
-  <div class="card section">
-    <div class="label">This Month Balance</div>
-    <div id="monthBalance" class="value">৳0</div>
-  </div>
-</div>
-</section>
-  
-
-<section id="entry" class="page">
-<div class="card"><h2 id="entryTitle">New Entry</h2>
-<div id="editNotice" class="notice" style="display:none">আপনি একটি হিসাব Edit করছেন। Save করলে Google Sheets-এর Row আপডেট হবে।</div>
-<form id="entryForm"><input type="hidden" id="editId">
-<div class="two"><div><label>Type</label><select id="type" required><option value="Income">Income</option><option value="Expense">Expense</option></select></div><div><label>Date</label><input id="date" type="date" required></div></div>
-<div class="two"><div><label>Category</label><input id="category" placeholder="যেমন: Salary, Food" required></div><div><label>Amount (৳)</label><input id="amount" type="number" min="0" step="0.01" required></div></div>
-<div class="two"><div><label>Purpose</label><input id="purpose" placeholder="কী জন্য?" required></div><div><label>Source / Recipient</label><input id="party" placeholder="কার কাছ থেকে / কাকে"></div></div>
-<div><label>Note</label><textarea id="note" placeholder="অতিরিক্ত তথ্য"></textarea></div>
-<div class="actions"><button class="btn primary" type="submit" id="saveBtn">💾 Save Entry</button><button class="btn secondary" type="button" id="cancelEdit" style="display:none">Cancel Edit</button></div>
-</form></div>
-</section>
-
-<section id="records" class="page">
-<div class="card"><h2>All Records</h2>
-<div class="toolbar"><input id="search" placeholder="Search category, purpose, person..."><select id="filterType"><option value="">All Types</option><option value="Income">Income</option><option value="Expense">Expense</option></select><button class="btn secondary" id="refreshBtn">🔄 Refresh</button></div>
-<div class="table-wrap"><table><thead><tr><th>Date</th><th>Type</th><th>Category</th><th>Purpose</th><th>Source/Recipient</th><th>Amount</th><th>Action</th></tr></thead><tbody id="recordsBody"></tbody></table></div>
-</div></section>
-
-<section id="settings" class="page">
 <div class="card"><h2>Google Sheets Connection</h2><div class="notice">Google Apps Script Web App URL এখানে রাখুন।</div>
 <label>Apps Script Web App URL</label><input id="apiUrl" type="url" placeholder="https://script.google.com/macros/s/.../exec">
 <div class="actions" style="margin-top:11px"><button class="btn primary" id="saveSettings">Save Settings</button><button class="btn secondary" id="loadSheet">☁️ Load from Google Sheets</button></div>
