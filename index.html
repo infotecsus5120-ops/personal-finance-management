@@ -83,12 +83,6 @@ input,select,textarea{width:100%;border:1px solid var(--b);border-radius:10px;pa
 <div class="two"><div><label>Purpose</label><input id="mPurpose" required></div><div><label>Source / Recipient</label><input id="mParty"></div></div>
 <div><label>Note</label><textarea id="mNote"></textarea></div>
 <div class="actions"><button class="btn primary" type="submit">💾 Update</button><button class="btn secondary" type="button" id="cancelModal">Cancel</button></div>
-</form></div></div>
-<div id="toast"></div>
-
-<script>
-const KEY="pfm_records_v1",URLKEY="pfm_api_url";
-let records=JSON.parse(localStorage.getItem(KEY)||"[]");
 function render(){
   let inc=0,exp=0;
 
@@ -97,13 +91,13 @@ function render(){
     else exp+=Number(r.amount||0);
   });
 
-  const now=new Date();
-  const currentMonth=now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0");
+  const selectedMonth=$("reportMonth").value ||
+    new Date().toISOString().slice(0,7);
 
   let monthInc=0,monthExp=0;
 
   records.forEach(r=>{
-    if(String(r.date||"").slice(0,7)===currentMonth){
+    if(String(r.date||"").slice(0,7)===selectedMonth){
       if(typeOf(r.type)==="Income") monthInc+=Number(r.amount||0);
       else monthExp+=Number(r.amount||0);
     }
@@ -111,7 +105,6 @@ function render(){
 
   $("totalIncome").textContent=money(inc);
   $("totalExpense").textContent=money(exp);
-  $("balance").textContent=money(inc-exp);
 
   $("monthIncome").textContent=money(monthInc);
   $("monthExpense").textContent=money(monthExp);
@@ -119,37 +112,19 @@ function render(){
 
   $("localCount").textContent=records.length;
 
-  let q=$("search").value.trim().toLowerCase(),ft=$("filterType").value;
-
-  let arr=records.filter(r=>
-    (!q||[r.date,r.type,r.category,r.purpose,r.party,r.note].join(" ").toLowerCase().includes(q)) &&
-    (!ft||typeOf(r.type)===ft)
-  );
-
-  $("recordsBody").innerHTML=arr.length
-    ?arr.map(r=>{
-      let t=typeOf(r.type),c=t.toLowerCase();
-
-      return `<tr>
-        <td>${esc(r.date)}</td>
-        <td><span class="pill ${c}">${t}</span></td>
-        <td>${esc(r.category)}</td>
-        <td>${esc(r.purpose)}</td>
-        <td>${esc(r.party)}</td>
-        <td class="amount ${c}">${money(r.amount)}</td>
-        <td>
-          <div class="actions">
-            <button class="btn secondary" onclick="openEdit('${esc(r.id)}')">✏️ Edit</button>
-            <button class="btn danger" onclick="deleteRecord('${esc(r.id)}')">🗑️ Delete</button>
-          </div>
-        </td>
-      </tr>`;
-    }).join("")
-    :`<tr>
-        <td colspan="7" class="empty">কোনো হিসাব পাওয়া যায়নি</td>
-      </tr>`;
-
   $("recent").innerHTML=records.slice(0,5).map(r=>{
+    let t=typeOf(r.type);
+    let c=t.toLowerCase();
+
+    return `<div style="display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--b)">
+      <div>
+        <b>${esc(r.purpose||r.category||"Record")}</b>
+        <div class="small">${esc(r.date)} · ${esc(r.party)}</div>
+      </div>
+      <b class="amount ${c}">${t==="Income"?"+":"-"}${money(r.amount)}</b>
+    </div>`;
+  }).join("") || `<div class="empty">এখনও কোনো হিসাব নেই</div>`;
+}
     let t=typeOf(r.type),c=t.toLowerCase();
 
     return `<div style="display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--b)">
