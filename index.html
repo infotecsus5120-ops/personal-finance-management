@@ -113,7 +113,7 @@ $("monthBalance").textContent=money(monthInc-monthExp);
 const currentMonth=now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0");
 let monthInc=0,monthExp=0;
 records.forEach(r=>{
-  if(String(r.date||"").slice(0,7)===currentMonth){
+ if(String(r.date||"").slice(0,7)===currentMonth){
     if(typeOf(r.type)==="Income") monthInc+=Number(r.amount||0);
     else monthExp+=Number(r.amount||0);
   }
