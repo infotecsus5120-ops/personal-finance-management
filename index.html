@@ -84,51 +84,77 @@ input,select,textarea{width:100%;border:1px solid var(--b);border-radius:10px;pa
 <script>
 const KEY="pfm_records_v1",URLKEY="pfm_api_url";
 let records=JSON.parse(localStorage.getItem(KEY)||"[]");
-const $=id=>document.getElementById(id), today=()=>new Date().toISOString().slice(0,10);
-const money=n=>"৳"+Number(n||0).toLocaleString("en-BD",{minimumFractionDigits:0,maximumFractionDigits:2});
-const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
-const typeOf=t=>String(t).toLowerCase()==="expense"||String(t)==="ব্যয়"?"Expense":"Income";
-function persist(){localStorage.setItem(KEY,JSON.stringify(records));$("localCount").textContent=records.length}
-function toast(m){let t=$("toast");t.textContent=m;t.classList.add("show");clearTimeout(window.tt);window.tt=setTimeout(()=>t.classList.remove("show"),2800)}
-function render(){const now=new Date();
-const currentMonth=now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0");
+function render(){
+  let inc=0,exp=0;
 
-let monthInc=0,monthExp=0;
+  records.forEach(r=>{
+    if(typeOf(r.type)==="Income") inc+=Number(r.amount||0);
+    else exp+=Number(r.amount||0);
+  });
 
-records.forEach(r=>{
-  if(String(r.date||"").slice(0,7)===currentMonth){
-    if(typeOf(r.type)==="Income"){
-      monthInc+=Number(r.amount||0);
-    }else{
-      monthExp+=Number(r.amount||0);
+  const now=new Date();
+  const currentMonth=now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0");
+
+  let monthInc=0,monthExp=0;
+
+  records.forEach(r=>{
+    if(String(r.date||"").slice(0,7)===currentMonth){
+      if(typeOf(r.type)==="Income") monthInc+=Number(r.amount||0);
+      else monthExp+=Number(r.amount||0);
     }
-  }
-});
+  });
 
-$("monthIncome").textContent=money(monthInc);
-$("monthExpense").textContent=money(monthExp);
-$("monthBalance").textContent=money(monthInc-monthExp);
- let inc=0,exp=0;records.forEach(r=>typeOf(r.type)==="Income"?inc+=+r.amount||0:exp+=+r.amount||0);
- const now=new Date();
-const currentMonth=now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0");
-let monthInc=0,monthExp=0;
-records.forEach(r=>{
- if(String(r.date||"").slice(0,7)===currentMonth){
-    if(typeOf(r.type)==="Income") monthInc+=Number(r.amount||0);
-    else monthExp+=Number(r.amount||0);
-  }
-});
-const mi=document.getElementById("monthIncome");
-const me=document.getElementById("monthExpense");
-const mb=document.getElementById("monthBalance");
-if(mi) mi.textContent="৳"+monthInc.toLocaleString("en-BD");
-if(me) me.textContent="৳"+monthExp.toLocaleString("en-BD");
-if(mb) mb.textContent="৳"+(monthInc-monthExp).toLocaleString("en-BD");
- $("totalIncome").textContent=money(inc);$("totalExpense").textContent=money(exp);$("balance").textContent=money(inc-exp);$("localCount").textContent=records.length;
- let q=$("search").value.trim().toLowerCase(),ft=$("filterType").value;
- let arr=records.filter(r=>(!q||[r.date,r.type,r.category,r.purpose,r.party,r.note].join(" ").toLowerCase().includes(q))&&(!ft||typeOf(r.type)===ft));
- $("recordsBody").innerHTML=arr.length?arr.map(r=>{let t=typeOf(r.type),c=t.toLowerCase();return `<tr><td>${esc(r.date)}</td><td><span class="pill ${c}">${t}</span></td><td>${esc(r.category)}</td><td>${esc(r.purpose)}</td><td>${esc(r.party)}</td><td class="amount ${c}">${money(r.amount)}</td><td><div class="actions"><button class="btn secondary" onclick="openEdit('${esc(r.id)}')">✏️ Edit</button><button class="btn danger" onclick="deleteRecord('${esc(r.id)}')">🗑️ Delete</button></div></td></tr>`}).join(""):`<tr><td colspan="7" class="empty">কোনো হিসাব পাওয়া যায়নি</td></tr>`;
- $("recent").innerHTML=records.slice(0,5).map(r=>{let t=typeOf(r.type),c=t.toLowerCase();return `<div style="display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--b)"><div><b>${esc(r.purpose||r.category||"Record")}</b><div class="small">${esc(r.date)} · ${esc(r.party)}</div></div><b class="amount ${c}">${t==="Income"?"+":"-"}${money(r.amount)}</b></div>`}).join("")||`<div class="empty">এখনও কোনো হিসাব নেই</div>`;
+  $("totalIncome").textContent=money(inc);
+  $("totalExpense").textContent=money(exp);
+  $("balance").textContent=money(inc-exp);
+
+  $("monthIncome").textContent=money(monthInc);
+  $("monthExpense").textContent=money(monthExp);
+  $("monthBalance").textContent=money(monthInc-monthExp);
+
+  $("localCount").textContent=records.length;
+
+  let q=$("search").value.trim().toLowerCase(),ft=$("filterType").value;
+
+  let arr=records.filter(r=>
+    (!q||[r.date,r.type,r.category,r.purpose,r.party,r.note].join(" ").toLowerCase().includes(q)) &&
+    (!ft||typeOf(r.type)===ft)
+  );
+
+  $("recordsBody").innerHTML=arr.length
+    ?arr.map(r=>{
+      let t=typeOf(r.type),c=t.toLowerCase();
+
+      return `<tr>
+        <td>${esc(r.date)}</td>
+        <td><span class="pill ${c}">${t}</span></td>
+        <td>${esc(r.category)}</td>
+        <td>${esc(r.purpose)}</td>
+        <td>${esc(r.party)}</td>
+        <td class="amount ${c}">${money(r.amount)}</td>
+        <td>
+          <div class="actions">
+            <button class="btn secondary" onclick="openEdit('${esc(r.id)}')">✏️ Edit</button>
+            <button class="btn danger" onclick="deleteRecord('${esc(r.id)}')">🗑️ Delete</button>
+          </div>
+        </td>
+      </tr>`;
+    }).join("")
+    :`<tr>
+        <td colspan="7" class="empty">কোনো হিসাব পাওয়া যায়নি</td>
+      </tr>`;
+
+  $("recent").innerHTML=records.slice(0,5).map(r=>{
+    let t=typeOf(r.type),c=t.toLowerCase();
+
+    return `<div style="display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--b)">
+      <div>
+        <b>${esc(r.purpose||r.category||"Record")}</b>
+        <div class="small">${esc(r.date)} · ${esc(r.party)}</div>
+      </div>
+      <b class="amount ${c}">${t==="Income"?"+":"-"}${money(r.amount)}</b>
+    </div>`;
+  }).join("")||`<div class="empty">এখনও কোনো হিসাব নেই</div>`;
 }
 async function apiGet(p){
  const url=localStorage.getItem(URLKEY);if(!url)return{ok:false,reason:"no-url"};
