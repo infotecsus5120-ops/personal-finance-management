@@ -43,9 +43,14 @@ input,select,textarea{width:100%;border:1px solid var(--b);border-radius:10px;pa
   <div id="recent"></div>
 </div>
 <div class="card section">
-  <h2>📊 Monthly Report</h2>
+<h2>📊 Monthly Report</h2>
 
-  <div class="two">
+<div style="margin:12px 0">
+  <label class="label">Select Month</label>
+  <input type="month" id="reportMonth">
+</div>
+
+<div class="two">
     <div class="card stat income">
       <div class="label">This Month Income</div>
       <div id="monthIncome" class="value">৳0</div>
