@@ -7,165 +7,1644 @@
 <meta name="description" content="Personal Finance Management">
 <link rel="manifest" href="manifest.json">
 <title>Personal Finance Management</title>
+
 <style>
-*{box-sizing:border-box}:root{--p:#2563eb;--g:#16a34a;--r:#dc2626;--bg:#f3f6fb;--card:#fff;--text:#172033;--muted:#64748b;--b:#e2e8f0}
-body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif}.app{max-width:1100px;margin:auto;padding:12px 12px 90px}
-header{background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;border-radius:18px;padding:20px;margin-bottom:12px}header h1{margin:0 0 5px;font-size:22px}header p{margin:0;font-size:13px;opacity:.9}
-nav{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:12px}nav button{border:1px solid var(--b);background:#fff;border-radius:11px;padding:10px 5px;font-weight:700;color:var(--muted);cursor:pointer}nav button.active{background:var(--p);color:#fff;border-color:var(--p)}
-.page{display:none}.page.active{display:block}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.card{background:var(--card);border:1px solid var(--b);border-radius:15px;padding:15px;box-shadow:0 3px 12px #0f172a0a}
-.stat .label{font-size:13px;color:var(--muted)}.stat .value{font-size:24px;font-weight:800;margin-top:4px}.income .value{color:var(--g)}.expense .value{color:var(--r)}
-.section{margin-top:12px}h2{font-size:18px;margin:0 0 13px}.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}form{display:grid;gap:11px}label{font-size:13px;font-weight:700;display:block;margin-bottom:4px}
-input,select,textarea{width:100%;border:1px solid var(--b);border-radius:10px;padding:10px;background:#fff;color:var(--text);outline:none}input:focus,select:focus,textarea:focus{border-color:var(--p);box-shadow:0 0 0 3px #2563eb18}textarea{min-height:75px;resize:vertical}
-.btn{border:0;border-radius:10px;padding:10px 14px;font-weight:800;cursor:pointer}.primary{background:var(--p);color:#fff}.secondary{background:#e8eef8;color:#1e3a8a}.danger{background:#fee2e2;color:#991b1b}.actions{display:flex;gap:7px;flex-wrap:wrap}.actions .btn{flex:1;min-width:110px}
-.toolbar{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:10px}.toolbar input,.toolbar select{flex:1;min-width:145px}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:760px}th,td{padding:9px 7px;border-bottom:1px solid var(--b);text-align:left;font-size:13px;vertical-align:top}th{background:#f8fafc;color:var(--muted)}
-.pill{display:inline-block;padding:4px 8px;border-radius:999px;font-size:11px;font-weight:800}.pill.income{background:#dcfce7;color:#166534}.pill.expense{background:#fee2e2;color:#991b1b}.amount.income{color:var(--g);font-weight:800}.amount.expense{color:var(--r);font-weight:800}.small{font-size:12px;color:var(--muted)}.empty{text-align:center;padding:25px;color:var(--muted)}.notice{padding:10px 12px;border-radius:10px;background:#eff6ff;color:#1e40af;font-size:13px;margin-bottom:11px}
-.modal{position:fixed;inset:0;background:#0f172a88;display:none;align-items:flex-end;justify-content:center;padding:10px;z-index:20}.modal.show{display:flex}.modal-box{background:#fff;width:min(620px,100%);border-radius:19px;padding:17px;max-height:92vh;overflow:auto}.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.close{border:0;background:#eef2f7;border-radius:50%;width:35px;height:35px;cursor:pointer}
-#toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%) translateY(20px);background:#111827;color:#fff;padding:10px 15px;border-radius:11px;opacity:0;pointer-events:none;transition:.25s;z-index:50;font-size:13px;max-width:90%;text-align:center}#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-.loading{opacity:.6;pointer-events:none}@media(max-width:700px){.grid{grid-template-columns:1fr}.two{grid-template-columns:1fr}.app{padding:9px 9px 85px}header{border-radius:15px}nav{position:sticky;bottom:7px;z-index:10;background:#ffffffee;padding:5px;border-radius:15px;box-shadow:0 5px 25px #0f172a22}nav button{font-size:11px;padding:9px 3px}}
+*{box-sizing:border-box}
+:root{
+  --p:#2563eb;
+  --g:#16a34a;
+  --r:#dc2626;
+  --bg:#f3f6fb;
+  --card:#fff;
+  --text:#172033;
+  --muted:#64748b;
+  --b:#e2e8f0
+}
+
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif
+}
+
+.app{
+  max-width:1100px;
+  margin:auto;
+  padding:12px 12px 90px
+}
+
+header{
+  background:linear-gradient(135deg,#2563eb,#1d4ed8);
+  color:#fff;
+  border-radius:18px;
+  padding:20px;
+  margin-bottom:12px
+}
+
+header h1{
+  margin:0 0 5px;
+  font-size:22px
+}
+
+header p{
+  margin:0;
+  font-size:13px;
+  opacity:.9
+}
+
+nav{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:7px;
+  margin-bottom:12px
+}
+
+nav button{
+  border:1px solid var(--b);
+  background:#fff;
+  border-radius:11px;
+  padding:10px 5px;
+  font-weight:700;
+  color:var(--muted);
+  cursor:pointer
+}
+
+nav button.active{
+  background:var(--p);
+  color:#fff;
+  border-color:var(--p)
+}
+
+.page{display:none}
+.page.active{display:block}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px
+}
+
+.card{
+  background:var(--card);
+  border:1px solid var(--b);
+  border-radius:15px;
+  padding:15px;
+  box-shadow:0 3px 12px #0f172a0a
+}
+
+.stat .label{
+  font-size:13px;
+  color:var(--muted)
+}
+
+.stat .value{
+  font-size:24px;
+  font-weight:800;
+  margin-top:4px
+}
+
+.income .value{color:var(--g)}
+.expense .value{color:var(--r)}
+
+.section{margin-top:12px}
+
+h2{
+  font-size:18px;
+  margin:0 0 13px
+}
+
+.two{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px
+}
+
+form{
+  display:grid;
+  gap:11px
+}
+
+label{
+  font-size:13px;
+  font-weight:700;
+  display:block;
+  margin-bottom:4px
+}
+
+input,select,textarea{
+  width:100%;
+  border:1px solid var(--b);
+  border-radius:10px;
+  padding:10px;
+  background:#fff;
+  color:var(--text);
+  outline:none
+}
+
+input:focus,select:focus,textarea:focus{
+  border-color:var(--p);
+  box-shadow:0 0 0 3px #2563eb18
+}
+
+textarea{
+  min-height:75px;
+  resize:vertical
+}
+
+.btn{
+  border:0;
+  border-radius:10px;
+  padding:10px 14px;
+  font-weight:800;
+  cursor:pointer
+}
+
+.primary{
+  background:var(--p);
+  color:#fff
+}
+
+.secondary{
+  background:#e8eef8;
+  color:#1e3a8a
+}
+
+.danger{
+  background:#fee2e2;
+  color:#991b1b
+}
+
+.actions{
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap
+}
+
+.actions .btn{
+  flex:1;
+  min-width:110px
+}
+
+.toolbar{
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap;
+  margin-bottom:10px
+}
+
+.toolbar input,
+.toolbar select{
+  flex:1;
+  min-width:145px
+}
+
+.table-wrap{
+  overflow:auto
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  min-width:760px
+}
+
+th,td{
+  padding:9px 7px;
+  border-bottom:1px solid var(--b);
+  text-align:left;
+  font-size:13px;
+  vertical-align:top
+}
+
+th{
+  background:#f8fafc;
+  color:var(--muted)
+}
+
+.pill{
+  display:inline-block;
+  padding:4px 8px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:800
+}
+
+.pill.income{
+  background:#dcfce7;
+  color:#166534
+}
+
+.pill.expense{
+  background:#fee2e2;
+  color:#991b1b
+}
+
+.amount.income{
+  color:var(--g);
+  font-weight:800
+}
+
+.amount.expense{
+  color:var(--r);
+  font-weight:800
+}
+
+.small{
+  font-size:12px;
+  color:var(--muted)
+}
+
+.empty{
+  text-align:center;
+  padding:25px;
+  color:var(--muted)
+}
+
+.notice{
+  padding:10px 12px;
+  border-radius:10px;
+  background:#eff6ff;
+  color:#1e40af;
+  font-size:13px;
+  margin-bottom:11px
+}
+
+.modal{
+  position:fixed;
+  inset:0;
+  background:#0f172a88;
+  display:none;
+  align-items:flex-end;
+  justify-content:center;
+  padding:10px;
+  z-index:20
+}
+
+.modal.show{
+  display:flex
+}
+
+.modal-box{
+  background:#fff;
+  width:min(620px,100%);
+  border-radius:19px;
+  padding:17px;
+  max-height:92vh;
+  overflow:auto
+}
+
+.modal-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:12px
+}
+
+.close{
+  border:0;
+  background:#eef2f7;
+  border-radius:50%;
+  width:35px;
+  height:35px;
+  cursor:pointer
+}
+
+#toast{
+  position:fixed;
+  left:50%;
+  bottom:18px;
+  transform:translateX(-50%) translateY(20px);
+  background:#111827;
+  color:#fff;
+  padding:10px 15px;
+  border-radius:11px;
+  opacity:0;
+  pointer-events:none;
+  transition:.25s;
+  z-index:50;
+  font-size:13px;
+  max-width:90%;
+  text-align:center
+}
+
+#toast.show{
+  opacity:1;
+  transform:translateX(-50%) translateY(0)
+}
+
+.loading{
+  opacity:.6;
+  pointer-events:none
+}
+
+@media(max-width:700px){
+  .grid{
+    grid-template-columns:1fr
+  }
+
+  .two{
+    grid-template-columns:1fr
+  }
+
+  .app{
+    padding:9px 9px 85px
+  }
+
+  header{
+    border-radius:15px
+  }
+
+  nav{
+    position:sticky;
+    bottom:7px;
+    z-index:10;
+    background:#ffffffee;
+    padding:5px;
+    border-radius:15px;
+    box-shadow:0 5px 25px #0f172a22
+  }
+
+  nav button{
+    font-size:11px;
+    padding:9px 3px
+  }
+}
 </style>
 </head>
+
 <body>
+
 <div class="app">
-<header><h1>Personal Finance Management</h1><p>আপনার আয়, ব্যয় ও ব্যক্তিগত হিসাব এক জায়গায় পরিচালনা করুন</p></header>
+
+<header>
+  <h1>Personal Finance Management</h1>
+  <p>আপনার আয়, ব্যয় ও ব্যক্তিগত হিসাব এক জায়গায় পরিচালনা করুন</p>
+</header>
+
 <nav>
-<button class="nav active" data-page="dashboard">📊 Dashboard</button>
-<button class="nav" data-page="entry">➕ New Entry</button>
-<button class="nav" data-page="records">📋 Records</button>
-<button class="nav" data-page="settings">⚙️ Settings</button>
+  <button class="nav active" data-page="dashboard">📊 Dashboard</button>
+  <button class="nav" data-page="entry">➕ New Entry</button>
+  <button class="nav" data-page="records">📋 Records</button>
+  <button class="nav" data-page="settings">⚙️ Settings</button>
+</nav>
+
+<!-- DASHBOARD -->
 <section id="dashboard" class="page active">
-<div class="grid">
-<div class="card stat income"><div class="label">Total Income</div><div id="totalIncome" class="value">৳0</div></div>
-<div class="card stat expense"><div class="label">Total Expense</div><div id="totalExpense" class="value">৳0</div></div>
-<div class="card stat"><div class="label">Balance</div><div id="balance" class="value">৳0</div></div>
-</div>
 
-<div class="card section">
-<h2>Recent Records</h2>
-<div id="recent"></div>
-</div>
+  <div class="grid">
 
-<div class="card section">
-<h2>Monthly Report</h2>
-<div class="grid">
-<div class="card stat income">
-<div class="label">This Month Income</div>
-<div id="monthIncome" class="value">৳0</div>
-</div>
-<div class="card stat expense">
-<div class="label">This Month Expense</div>
-<div id="monthExpense" class="value">৳0</div>
-</div>
-<div class="card stat">
-<div class="label">This Month Balance</div>
-<div id="monthBalance" class="value">৳0</div>
-</div>
-</div>
-</div>
+    <div class="card stat income">
+      <div class="label">Total Income</div>
+      <div id="totalIncome" class="value">৳0</div>
+    </div>
+
+    <div class="card stat expense">
+      <div class="label">Total Expense</div>
+      <div id="totalExpense" class="value">৳0</div>
+    </div>
+
+    <div class="card stat">
+      <div class="label">Balance</div>
+      <div id="balance" class="value">৳0</div>
+    </div>
+
+  </div>
+
+  <div class="card section">
+    <h2>Recent Records</h2>
+    <div id="recent"></div>
+  </div>
+
+  <!-- MONTHLY REPORT -->
+  <div class="card section">
+
+    <h2>📅 Monthly Report</h2>
+
+    <div class="grid">
+
+      <div class="card stat income">
+        <div class="label">This Month Income</div>
+        <div id="monthIncome" class="value">৳0</div>
+      </div>
+
+      <div class="card stat expense">
+        <div class="label">This Month Expense</div>
+        <div id="monthExpense" class="value">৳0</div>
+      </div>
+
+      <div class="card stat">
+        <div class="label">This Month Balance</div>
+        <div id="monthBalance" class="value">৳0</div>
+      </div>
+
+    </div>
+
+  </div>
+
 </section>
+
+
+<!-- ENTRY -->
 <section id="entry" class="page">
-<div class="card"><h2 id="entryTitle">New Entry</h2>
-<div id="editNotice" class="notice" style="display:none">আপনি একটি হিসাব Edit করছেন। Save করলে Google Sheets-এর Row আপডেট হবে।</div>
-<form id="entryForm"><input type="hidden" id="editId">
-<div class="two"><div><label>Type</label><select id="type" required><option value="Income">Income</option><option value="Expense">Expense</option></select></div><div><label>Date</label><input id="date" type="date" required></div></div>
-<div class="two"><div><label>Category</label><input id="category" placeholder="যেমন: Salary, Food" required></div><div><label>Amount (৳)</label><input id="amount" type="number" min="0" step="0.01" required></div></div>
-<div class="two"><div><label>Purpose</label><input id="purpose" placeholder="কী জন্য?" required></div><div><label>Source / Recipient</label><input id="party" placeholder="কার কাছ থেকে / কাকে"></div></div>
-<div><label>Note</label><textarea id="note" placeholder="অতিরিক্ত তথ্য"></textarea></div>
-<div class="actions"><button class="btn primary" type="submit" id="saveBtn">💾 Save Entry</button><button class="btn secondary" type="button" id="cancelEdit" style="display:none">Cancel Edit</button></div>
-</form></div>
+
+  <div class="card">
+
+    <h2 id="entryTitle">New Entry</h2>
+
+    <div id="editNotice" class="notice" style="display:none">
+      আপনি একটি হিসাব Edit করছেন। Save করলে Google Sheets-এর Row আপডেট হবে।
+    </div>
+
+    <form id="entryForm">
+
+      <input type="hidden" id="editId">
+
+      <div class="two">
+
+        <div>
+          <label>Type</label>
+          <select id="type" required>
+            <option value="Income">Income</option>
+            <option value="Expense">Expense</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Date</label>
+          <input id="date" type="date" required>
+        </div>
+
+      </div>
+
+      <div class="two">
+
+        <div>
+          <label>Category</label>
+          <input id="category" placeholder="যেমন: Salary, Food" required>
+        </div>
+
+        <div>
+          <label>Amount (৳)</label>
+          <input id="amount" type="number" min="0" step="0.01" required>
+        </div>
+
+      </div>
+
+      <div class="two">
+
+        <div>
+          <label>Purpose</label>
+          <input id="purpose" placeholder="কী জন্য?" required>
+        </div>
+
+        <div>
+          <label>Source / Recipient</label>
+          <input id="party" placeholder="কার কাছ থেকে / কাকে">
+        </div>
+
+      </div>
+
+      <div>
+        <label>Note</label>
+        <textarea id="note" placeholder="অতিরিক্ত তথ্য"></textarea>
+      </div>
+
+      <div class="actions">
+
+        <button class="btn primary" type="submit" id="saveBtn">
+          💾 Save Entry
+        </button>
+
+        <button
+          class="btn secondary"
+          type="button"
+          id="cancelEdit"
+          style="display:none">
+          Cancel Edit
+        </button>
+
+      </div>
+
+    </form>
+
+  </div>
+
 </section>
 
-<section id="records" class="page">
-<div class="card"><h2>All Records</h2>
-<div class="toolbar"><input id="search" placeholder="Search category, purpose, person..."><select id="filterType"><option value="">All Types</option><option value="Income">Income</option><option value="Expense">Expense</option></select><button class="btn secondary" id="refreshBtn">🔄 Refresh</button></div>
-<div class="table-wrap"><table><thead><tr><th>Date</th><th>Type</th><th>Category</th><th>Purpose</th><th>Source/Recipient</th><th>Amount</th><th>Action</th></tr></thead><tbody id="recordsBody"></tbody></table></div>
-</div></section>
 
+<!-- RECORDS -->
+<section id="records" class="page">
+
+  <div class="card">
+
+    <h2>All Records</h2>
+
+    <div class="toolbar">
+
+      <input
+        id="search"
+        placeholder="Search category, purpose, person...">
+
+      <select id="filterType">
+        <option value="">All Types</option>
+        <option value="Income">Income</option>
+        <option value="Expense">Expense</option>
+      </select>
+
+      <button class="btn secondary" id="refreshBtn">
+        🔄 Refresh
+      </button>
+
+    </div>
+
+    <div class="table-wrap">
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Type</th>
+            <th>Category</th>
+            <th>Purpose</th>
+            <th>Source/Recipient</th>
+            <th>Amount</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+
+        <tbody id="recordsBody"></tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- SETTINGS -->
 <section id="settings" class="page">
-<div class="card"><h2>Google Sheets Connection</h2><div class="notice">Google Apps Script Web App URL এখানে রাখুন।</div>
-<label>Apps Script Web App URL</label><input id="apiUrl" type="url" placeholder="https://script.google.com/macros/s/.../exec">
-<div class="actions" style="margin-top:11px"><button class="btn primary" id="saveSettings">Save Settings</button><button class="btn secondary" id="loadSheet">☁️ Load from Google Sheets</button></div>
-<hr style="border:0;border-top:1px solid var(--b);margin:17px 0"><p class="small">Local records: <b id="localCount">0</b></p>
-<button class="btn secondary" id="clearLocal">Clear Local Data</button>
-</div></section>
+
+  <div class="card">
+
+    <h2>Google Sheets Connection</h2>
+
+    <div class="notice">
+      Google Apps Script Web App URL এখানে রাখুন।
+    </div>
+
+    <label>Apps Script Web App URL</label>
+
+    <input
+      id="apiUrl"
+      type="url"
+      placeholder="https://script.google.com/macros/s/.../exec">
+
+    <div class="actions" style="margin-top:11px">
+
+      <button class="btn primary" id="saveSettings">
+        Save Settings
+      </button>
+
+      <button class="btn secondary" id="loadSheet">
+        ☁️ Load from Google Sheets
+      </button>
+
+    </div>
+
+    <hr style="border:0;border-top:1px solid var(--b);margin:17px 0">
+
+    <p class="small">
+      Local records:
+      <b id="localCount">0</b>
+    </p>
+
+    <button class="btn secondary" id="clearLocal">
+      Clear Local Data
+    </button>
+
+  </div>
+
+</section>
+
 </div>
 
-<div id="editModal" class="modal"><div class="modal-box">
-<div class="modal-head"><h2 style="margin:0">Edit Record</h2><button class="close" id="closeModal">✕</button></div>
-<form id="editForm"><input type="hidden" id="mId">
-<div class="two"><div><label>Type</label><select id="mType"><option value="Income">Income</option><option value="Expense">Expense</option></select></div><div><label>Date</label><input id="mDate" type="date" required></div></div>
-<div class="two"><div><label>Category</label><input id="mCategory" required></div><div><label>Amount (৳)</label><input id="mAmount" type="number" min="0" step="0.01" required></div></div>
-<div class="two"><div><label>Purpose</label><input id="mPurpose" required></div><div><label>Source / Recipient</label><input id="mParty"></div></div>
-<div><label>Note</label><textarea id="mNote"></textarea></div>
-<div class="actions"><button class="btn primary" type="submit">💾 Update</button><button class="btn secondary" type="button" id="cancelModal">Cancel</button></div>
-</form></div></div>
+
+<!-- EDIT MODAL -->
+<div id="editModal" class="modal">
+
+  <div class="modal-box">
+
+    <div class="modal-head">
+
+      <h2 style="margin:0">Edit Record</h2>
+
+      <button class="close" id="closeModal">
+        ✕
+      </button>
+
+    </div>
+
+    <form id="editForm">
+
+      <input type="hidden" id="mId">
+
+      <div class="two">
+
+        <div>
+          <label>Type</label>
+
+          <select id="mType">
+            <option value="Income">Income</option>
+            <option value="Expense">Expense</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Date</label>
+          <input id="mDate" type="date" required>
+        </div>
+
+      </div>
+
+      <div class="two">
+
+        <div>
+          <label>Category</label>
+          <input id="mCategory" required>
+        </div>
+
+        <div>
+          <label>Amount (৳)</label>
+          <input
+            id="mAmount"
+            type="number"
+            min="0"
+            step="0.01"
+            required>
+        </div>
+
+      </div>
+
+      <div class="two">
+
+        <div>
+          <label>Purpose</label>
+          <input id="mPurpose" required>
+        </div>
+
+        <div>
+          <label>Source / Recipient</label>
+          <input id="mParty">
+        </div>
+
+      </div>
+
+      <div>
+        <label>Note</label>
+        <textarea id="mNote"></textarea>
+      </div>
+
+      <div class="actions">
+
+        <button class="btn primary" type="submit">
+          💾 Update
+        </button>
+
+        <button class="btn secondary" type="button" id="cancelModal">
+          Cancel
+        </button>
+
+      </div>
+
+    </form>
+
+  </div>
+
+</div>
+
+
 <div id="toast"></div>
 
+
 <script>
-const KEY="pfm_records_v1",URLKEY="pfm_api_url";
-let records=JSON.parse(localStorage.getItem(KEY)||"[]");
-const $=id=>document.getElementById(id), today=()=>new Date().toISOString().slice(0,10);
-const money=n=>"৳"+Number(n||0).toLocaleString("en-BD",{minimumFractionDigits:0,maximumFractionDigits:2});
-const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
-const typeOf=t=>String(t).toLowerCase()==="expense"||String(t)==="ব্যয়"?"Expense":"Income";
-function persist(){localStorage.setItem(KEY,JSON.stringify(records));$("localCount").textContent=records.length}
-function toast(m){let t=$("toast");t.textContent=m;t.classList.add("show");clearTimeout(window.tt);window.tt=setTimeout(()=>t.classList.remove("show"),2800)}
+
+const KEY="pfm_records_v1";
+const URLKEY="pfm_api_url";
+
+let records=JSON.parse(
+  localStorage.getItem(KEY)||"[]"
+);
+
+const $=id=>document.getElementById(id);
+
+const today=()=>new Date().toISOString().slice(0,10);
+
+const money=n=>"৳"+Number(n||0).toLocaleString(
+  "en-BD",
+  {
+    minimumFractionDigits:0,
+    maximumFractionDigits:2
+  }
+);
+
+const esc=s=>String(s??"").replace(
+  /[&<>"']/g,
+  c=>({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#039;"
+  }[c])
+);
+
+const typeOf=t=>
+  String(t).toLowerCase()==="expense" ||
+  String(t)==="ব্যয়"
+  ? "Expense"
+  : "Income";
+
+
+function persist(){
+
+  localStorage.setItem(
+    KEY,
+    JSON.stringify(records)
+  );
+
+  $("localCount").textContent=records.length;
+}
+
+
+function toast(m){
+
+  let t=$("toast");
+
+  t.textContent=m;
+
+  t.classList.add("show");
+
+  clearTimeout(window.tt);
+
+  window.tt=setTimeout(
+    ()=>t.classList.remove("show"),
+    2800
+  );
+}
+
+
+/* =========================
+   DASHBOARD + MONTHLY REPORT
+   ========================= */
+
 function render(){
- let inc=0,exp=0;
- records.forEach(r=>typeOf(r.type)==="Income"?inc+=+r.amount||0:exp+=+r.amount||0);
 
- const now=new Date();
- const currentMonth=now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0");
- let monthInc=0,monthExp=0;
+  let inc=0;
+  let exp=0;
 
- records.forEach(r=>{
-   if(String(r.date||"").slice(0,7)===currentMonth){
-     if(typeOf(r.type)==="Income") monthInc+=+r.amount||0;
-     else monthExp+=+r.amount||0;
-   }
- });
+  /* Total Income / Expense */
 
- $("totalIncome").textContent=money(inc);
- $("totalExpense").textContent=money(exp);
- $("balance").textContent=money(inc-exp);
- $("monthIncome").textContent=money(monthInc);
- $("monthExpense").textContent=money(monthExp);
- $("monthBalance").textContent=money(monthInc-monthExp);
- $("localCount").textContent=records.length;
- let q=$("search").value.trim().toLowerCase(),ft=$("filterType").value;
- let arr=records.filter(r=>(!q||[r.date,r.type,r.category,r.purpose,r.party,r.note].join(" ").toLowerCase().includes(q))&&(!ft||typeOf(r.type)===ft));
- $("recordsBody").innerHTML=arr.length?arr.map(r=>{let t=typeOf(r.type),c=t.toLowerCase();return `<tr><td>${esc(r.date)}</td><td><span class="pill ${c}">${t}</span></td><td>${esc(r.category)}</td><td>${esc(r.purpose)}</td><td>${esc(r.party)}</td><td class="amount ${c}">${money(r.amount)}</td><td><div class="actions"><button class="btn secondary" onclick="openEdit('${esc(r.id)}')">✏️ Edit</button><button class="btn danger" onclick="deleteRecord('${esc(r.id)}')">🗑️ Delete</button></div></td></tr>`}).join(""):`<tr><td colspan="7" class="empty">কোনো হিসাব পাওয়া যায়নি</td></tr>`;
- $("recent").innerHTML=records.slice(0,5).map(r=>{let t=typeOf(r.type),c=t.toLowerCase();return `<div style="display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--b)"><div><b>${esc(r.purpose||r.category||"Record")}</b><div class="small">${esc(r.date)} · ${esc(r.party)}</div></div><b class="amount ${c}">${t==="Income"?"+":"-"}${money(r.amount)}</b></div>`}).join("")||`<div class="empty">এখনও কোনো হিসাব নেই</div>`;
+  records.forEach(r=>{
+
+    const amount=Number(r.amount)||0;
+
+    if(typeOf(r.type)==="Income"){
+      inc+=amount;
+    }else{
+      exp+=amount;
+    }
+
+  });
+
+
+  /* Current Month */
+
+  const now=new Date();
+
+  const currentYear=now.getFullYear();
+
+  const currentMonth=String(
+    now.getMonth()+1
+  ).padStart(2,"0");
+
+  const currentMonthKey=
+    currentYear+"-"+currentMonth;
+
+
+  let monthInc=0;
+  let monthExp=0;
+
+
+  /* Monthly Income / Expense */
+
+  records.forEach(r=>{
+
+    const recordDate=
+      String(r.date||"");
+
+    const recordMonth=
+      recordDate.slice(0,7);
+
+
+    if(recordMonth===currentMonthKey){
+
+      const amount=
+        Number(r.amount)||0;
+
+      if(typeOf(r.type)==="Income"){
+
+        monthInc+=amount;
+
+      }else{
+
+        monthExp+=amount;
+
+      }
+
+    }
+
+  });
+
+
+  /* Dashboard */
+
+  $("totalIncome").textContent=
+    money(inc);
+
+  $("totalExpense").textContent=
+    money(exp);
+
+  $("balance").textContent=
+    money(inc-exp);
+
+
+  /* Monthly Report */
+
+  $("monthIncome").textContent=
+    money(monthInc);
+
+  $("monthExpense").textContent=
+    money(monthExp);
+
+  $("monthBalance").textContent=
+    money(monthInc-monthExp);
+
+
+  /* Local record count */
+
+  $("localCount").textContent=
+    records.length;
+
+
+  /* Search */
+
+  let q=$("search").value
+    .trim()
+    .toLowerCase();
+
+  let ft=$("filterType").value;
+
+
+  let arr=records.filter(r=>{
+
+    const searchable=[
+      r.date,
+      r.type,
+      r.category,
+      r.purpose,
+      r.party,
+      r.note
+    ]
+    .join(" ")
+    .toLowerCase();
+
+    return (
+      (!q || searchable.includes(q)) &&
+      (!ft || typeOf(r.type)===ft)
+    );
+
+  });
+
+
+  /* Records Table */
+
+  $("recordsBody").innerHTML=
+
+    arr.length
+
+    ?
+
+    arr.map(r=>{
+
+      let t=typeOf(r.type);
+
+      let c=t.toLowerCase();
+
+      return `
+        <tr>
+
+          <td>${esc(r.date)}</td>
+
+          <td>
+            <span class="pill ${c}">
+              ${t}
+            </span>
+          </td>
+
+          <td>${esc(r.category)}</td>
+
+          <td>${esc(r.purpose)}</td>
+
+          <td>${esc(r.party)}</td>
+
+          <td class="amount ${c}">
+            ${money(r.amount)}
+          </td>
+
+          <td>
+
+            <div class="actions">
+
+              <button
+                class="btn secondary"
+                onclick="openEdit('${esc(r.id)}')">
+                ✏️ Edit
+              </button>
+
+              <button
+                class="btn danger"
+                onclick="deleteRecord('${esc(r.id)}')">
+                🗑️ Delete
+              </button>
+
+            </div>
+
+          </td>
+
+        </tr>
+      `;
+
+    }).join("")
+
+    :
+
+    `
+      <tr>
+        <td colspan="7" class="empty">
+          কোনো হিসাব পাওয়া যায়নি
+        </td>
+      </tr>
+    `;
+
+
+  /* Recent Records */
+
+  $("recent").innerHTML=
+
+    records.slice(0,5).map(r=>{
+
+      let t=typeOf(r.type);
+
+      let c=t.toLowerCase();
+
+      return `
+
+        <div style="
+          display:flex;
+          justify-content:space-between;
+          gap:10px;
+          padding:10px 0;
+          border-bottom:1px solid var(--b)
+        ">
+
+          <div>
+
+            <b>
+              ${esc(
+                r.purpose ||
+                r.category ||
+                "Record"
+              )}
+            </b>
+
+            <div class="small">
+              ${esc(r.date)}
+              ·
+              ${esc(r.party)}
+            </div>
+
+          </div>
+
+          <b class="amount ${c}">
+
+            ${t==="Income" ? "+" : "-"}
+
+            ${money(r.amount)}
+
+          </b>
+
+        </div>
+
+      `;
+
+    }).join("")
+
+    ||
+
+    `
+      <div class="empty">
+        এখনও কোনো হিসাব নেই
+      </div>
+    `;
 }
+
+
+/* =========================
+   GOOGLE SHEETS API
+   ========================= */
+
 async function apiGet(p){
- const url=localStorage.getItem(URLKEY);if(!url)return{ok:false,reason:"no-url"};
- try{let r=await fetch(url+"?"+new URLSearchParams(p),{method:"GET",cache:"no-store",redirect:"follow"});return await r.json()}catch(e){return{ok:false,reason:e.message||"network-error"}}
-}
-const saveSheet=r=>apiGet({action:"save",id:r.id,date:r.date,type:r.type,category:r.category,purpose:r.purpose,party:r.party,amount:r.amount,note:r.note,createdAt:r.createdAt});
-const updateSheet=r=>apiGet({action:"update",id:r.id,date:r.date,type:r.type,category:r.category,purpose:r.purpose,party:r.party,amount:r.amount,note:r.note});
-const deleteSheet=id=>apiGet({action:"delete",id});
-function showPage(p){document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));document.querySelectorAll(".nav").forEach(x=>x.classList.remove("active"));$(p).classList.add("active");document.querySelector(`.nav[data-page="${p}"]`)?.classList.add("active");scrollTo({top:0,behavior:"smooth"})}
-document.querySelectorAll(".nav").forEach(b=>b.onclick=()=>showPage(b.dataset.page));
 
-function resetEntry(){$("entryForm").reset();$("date").value=today();$("editId").value="";$("entryTitle").textContent="New Entry";$("saveBtn").textContent="💾 Save Entry";$("cancelEdit").style.display="none";$("editNotice").style.display="none"}
+  const url=
+    localStorage.getItem(URLKEY);
+
+  if(!url){
+
+    return {
+      ok:false,
+      reason:"no-url"
+    };
+
+  }
+
+  try{
+
+    let r=await fetch(
+      url+"?"+new URLSearchParams(p),
+      {
+        method:"GET",
+        cache:"no-store",
+        redirect:"follow"
+      }
+    );
+
+    return await r.json();
+
+  }catch(e){
+
+    return {
+      ok:false,
+      reason:e.message||"network-error"
+    };
+
+  }
+
+}
+
+
+const saveSheet=r=>
+  apiGet({
+    action:"save",
+    id:r.id,
+    date:r.date,
+    type:r.type,
+    category:r.category,
+    purpose:r.purpose,
+    party:r.party,
+    amount:r.amount,
+    note:r.note,
+    createdAt:r.createdAt
+  });
+
+
+const updateSheet=r=>
+  apiGet({
+    action:"update",
+    id:r.id,
+    date:r.date,
+    type:r.type,
+    category:r.category,
+    purpose:r.purpose,
+    party:r.party,
+    amount:r.amount,
+    note:r.note
+  });
+
+
+const deleteSheet=id=>
+  apiGet({
+    action:"delete",
+    id
+  });
+
+
+/* =========================
+   PAGE NAVIGATION
+   ========================= */
+
+function showPage(p){
+
+  document
+    .querySelectorAll(".page")
+    .forEach(x=>x.classList.remove("active"));
+
+  document
+    .querySelectorAll(".nav")
+    .forEach(x=>x.classList.remove("active"));
+
+  $(p).classList.add("active");
+
+  document
+    .querySelector(
+      `.nav[data-page="${p}"]`
+    )
+    ?.classList.add("active");
+
+  scrollTo({
+    top:0,
+    behavior:"smooth"
+  });
+}
+
+
+document
+  .querySelectorAll(".nav")
+  .forEach(
+    b=>b.onclick=()=>showPage(b.dataset.page)
+  );
+
+
+/* =========================
+   NEW ENTRY
+   ========================= */
+
+function resetEntry(){
+
+  $("entryForm").reset();
+
+  $("date").value=today();
+
+  $("editId").value="";
+
+  $("entryTitle").textContent=
+    "New Entry";
+
+  $("saveBtn").textContent=
+    "💾 Save Entry";
+
+  $("cancelEdit").style.display=
+    "none";
+
+  $("editNotice").style.display=
+    "none";
+}
+
+
 $("entryForm").onsubmit=async e=>{
- e.preventDefault();let id=$("editId").value;
- let r={id:id||crypto.randomUUID(),date:$("date").value,type:$("type").value,category:$("category").value.trim(),purpose:$("purpose").value.trim(),party:$("party").value.trim(),amount:Number($("amount").value),note:$("note").value.trim(),createdAt:new Date().toISOString()};
- $("entryForm").classList.add("loading");
- if(id){let x=await updateSheet(r);if(x.ok){let i=records.findIndex(z=>String(z.id)===String(id));if(i>=0)records[i]=r;persist();render();toast("Updated in Google Sheets ✓");resetEntry();showPage("records")}else toast("Update করা যায়নি")}
- else{records.unshift(r);persist();render();let x=await saveSheet(r);toast(x.ok?"Saved locally + Google Sheets ✓":x.reason==="no-url"?"Saved locally — URL নেই":"Saved locally — Google Sheets-এ পাঠানো যায়নি");e.target.reset();$("date").value=today()}
- $("entryForm").classList.remove("loading");
+
+  e.preventDefault();
+
+  let id=$("editId").value;
+
+
+  let r={
+
+    id:
+      id ||
+      crypto.randomUUID(),
+
+    date:
+      $("date").value,
+
+    type:
+      $("type").value,
+
+    category:
+      $("category").value.trim(),
+
+    purpose:
+      $("purpose").value.trim(),
+
+    party:
+      $("party").value.trim(),
+
+    amount:
+      Number($("amount").value),
+
+    note:
+      $("note").value.trim(),
+
+    createdAt:
+      new Date().toISOString()
+
+  };
+
+
+  $("entryForm")
+    .classList.add("loading");
+
+
+  /* Update */
+
+  if(id){
+
+    let x=await updateSheet(r);
+
+    if(x.ok){
+
+      let i=records.findIndex(
+        z=>String(z.id)===String(id)
+      );
+
+      if(i>=0){
+        records[i]=r;
+      }
+
+      persist();
+      render();
+
+      toast(
+        "Updated in Google Sheets ✓"
+      );
+
+      resetEntry();
+
+      showPage("records");
+
+    }else{
+
+      toast("Update করা যায়নি");
+
+    }
+
+
+  /* New record */
+
+  }else{
+
+    records.unshift(r);
+
+    persist();
+
+    render();
+
+    let x=await saveSheet(r);
+
+
+    toast(
+      x.ok
+      ? "Saved locally + Google Sheets ✓"
+      : x.reason==="no-url"
+      ? "Saved locally — URL নেই"
+      : "Saved locally — Google Sheets-এ পাঠানো যায়নি"
+    );
+
+
+    e.target.reset();
+
+    $("date").value=today();
+
+  }
+
+
+  $("entryForm")
+    .classList.remove("loading");
+
 };
-window.openEdit=id=>{let r=records.find(x=>String(x.id)===String(id));if(!r)return;$("mId").value=r.id;$("mType").value=typeOf(r.type);$("mDate").value=r.date;$("mCategory").value=r.category||"";$("mAmount").value=r.amount||0;$("mPurpose").value=r.purpose||"";$("mParty").value=r.party||"";$("mNote").value=r.note||"";$("editModal").classList.add("show")};
-function closeModal(){$("editModal").classList.remove("show")}$("closeModal").onclick=closeModal;$("cancelModal").onclick=closeModal;
-$("editForm").onsubmit=async e=>{e.preventDefault();let id=$("mId").value,old=records.find(x=>String(x.id)===String(id));if(!old)return;let r={id,date:$("mDate").value,type:$("mType").value,category:$("mCategory").value.trim(),purpose:$("mPurpose").value.trim(),party:$("mParty").value.trim(),amount:Number($("mAmount").value),note:$("mNote").value.trim(),createdAt:old.createdAt||new Date().toISOString()};let x=await updateSheet(r);if(x.ok){let i=records.findIndex(z=>String(z.id)===String(id));if(i>=0)records[i]=r;persist();render();closeModal();toast("Record updated ✓")}else toast("Google Sheets-এ Update করা যায়নি")};
-window.deleteRecord=async id=>{let r=records.find(x=>String(x.id)===String(id));if(!r)return;if(!confirm(`এই হিসাবটি Delete করতে চান?\n\n${r.date} — ${r.category} — ${money(r.amount)}`))return;let x=await deleteSheet(id);if(x.ok){records=records.filter(z=>String(z.id)!==String(id));persist();render();toast("Record deleted ✓")}else toast("Google Sheets থেকে Delete করা যায়নি")};
-$("search").oninput=render;$("filterType").onchange=render;$("refreshBtn").onclick=loadFromSheet;
-$("saveSettings").onclick=()=>{localStorage.setItem(URLKEY,$("apiUrl").value.trim());toast("Settings saved ✓")};
-async function loadFromSheet(){if(!localStorage.getItem(URLKEY)){toast("Settings-এ Web App URL দিন");showPage("settings");return}let x=await apiGet({});if(Array.isArray(x.records)){records=x.records;persist();render();toast("Google Sheets থেকে loaded ✓")}else toast("Load failed — local data দেখানো হচ্ছে")}
-$("loadSheet").onclick=loadFromSheet;
-$("clearLocal").onclick=()=>{if(confirm("শুধু এই browser-এর local data মুছে ফেলবেন? Google Sheets-এর data মুছবে না.")){records=[];persist();render();toast("Local data cleared")}};
-$("cancelEdit").onclick=resetEntry;$("apiUrl").value=localStorage.getItem(URLKEY)||"";$("date").value=today();persist();render();
-if("serviceWorker"in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
+
+
+/* =========================
+   EDIT MODAL
+   ========================= */
+
+window.openEdit=id=>{
+
+  let r=records.find(
+    x=>String(x.id)===String(id)
+  );
+
+  if(!r)return;
+
+
+  $("mId").value=r.id;
+
+  $("mType").value=
+    typeOf(r.type);
+
+  $("mDate").value=
+    r.date;
+
+  $("mCategory").value=
+    r.category||"";
+
+  $("mAmount").value=
+    r.amount||0;
+
+  $("mPurpose").value=
+    r.purpose||"";
+
+  $("mParty").value=
+    r.party||"";
+
+  $("mNote").value=
+    r.note||"";
+
+  $("editModal")
+    .classList.add("show");
+};
+
+
+function closeModal(){
+
+  $("editModal")
+    .classList.remove("show");
+
+}
+
+
+$("closeModal").onclick=
+  closeModal;
+
+$("cancelModal").onclick=
+  closeModal;
+
+
+/* =========================
+   UPDATE MODAL
+   ========================= */
+
+$("editForm").onsubmit=async e=>{
+
+  e.preventDefault();
+
+
+  let id=$("mId").value;
+
+
+  let old=records.find(
+    x=>String(x.id)===String(id)
+  );
+
+  if(!old)return;
+
+
+  let r={
+
+    id,
+
+    date:
+      $("mDate").value,
+
+    type:
+      $("mType").value,
+
+    category:
+      $("mCategory").value.trim(),
+
+    purpose:
+      $("mPurpose").value.trim(),
+
+    party:
+      $("mParty").value.trim(),
+
+    amount:
+      Number($("mAmount").value),
+
+    note:
+      $("mNote").value.trim(),
+
+    createdAt:
+      old.createdAt ||
+      new Date().toISOString()
+
+  };
+
+
+  let x=
+    await updateSheet(r);
+
+
+  if(x.ok){
+
+    let i=records.findIndex(
+      z=>String(z.id)===String(id)
+    );
+
+    if(i>=0){
+      records[i]=r;
+    }
+
+    persist();
+
+    render();
+
+    closeModal();
+
+    toast(
+      "Record updated ✓"
+    );
+
+  }else{
+
+    toast(
+      "Google Sheets-এ Update করা যায়নি"
+    );
+
+  }
+
+};
+
+
+/* =========================
+   DELETE
+   ========================= */
+
+window.deleteRecord=async id=>{
+
+  let r=records.find(
+    x=>String(x.id)===String(id)
+  );
+
+  if(!r)return;
+
+
+  if(!confirm(
+    `এই হিসাবটি Delete করতে চান?\n\n`+
+    `${r.date} — ${r.category} — ${money(r.amount)}`
+  ))return;
+
+
+  let x=
+    await deleteSheet(id);
+
+
+  if(x.ok){
+
+    records=
+      records.filter(
+        z=>String(z.id)!==String(id)
+      );
+
+    persist();
+
+    render();
+
+    toast(
+      "Record deleted ✓"
+    );
+
+  }else{
+
+    toast(
+      "Google Sheets থেকে Delete করা যায়নি"
+    );
+
+  }
+
+};
+
+
+/* =========================
+   SEARCH / FILTER
+   ========================= */
+
+$("search").oninput=
+  render;
+
+$("filterType").onchange=
+  render;
+
+$("refreshBtn").onclick=
+  loadFromSheet;
+
+
+/* =========================
+   SETTINGS
+   ========================= */
+
+$("saveSettings").onclick=()=>{
+
+  localStorage.setItem(
+    URLKEY,
+    $("apiUrl").value.trim()
+  );
+
+  toast(
+    "Settings saved ✓"
+  );
+
+};
+
+
+async function loadFromSheet(){
+
+  if(!localStorage.getItem(URLKEY)){
+
+    toast(
+      "Settings-এ Web App URL দিন"
+    );
+
+    showPage("settings");
+
+    return;
+  }
+
+
+  let x=
+    await apiGet({});
+
+
+  if(Array.isArray(x.records)){
+
+    records=
+      x.records;
+
+    persist();
+
+    render();
+
+    toast(
+      "Google Sheets থেকে loaded ✓"
+    );
+
+  }else{
+
+    toast(
+      "Load failed — local data দেখানো হচ্ছে"
+    );
+
+  }
+
+}
+
+
+$("loadSheet").onclick=
+  loadFromSheet;
+
+
+/* =========================
+   CLEAR LOCAL DATA
+   ========================= */
+
+$("clearLocal").onclick=()=>{
+
+  if(confirm(
+    "শুধু এই browser-এর local data মুছে ফেলবেন? Google Sheets-এর data মুছবে না."
+  )){
+
+    records=[];
+
+    persist();
+
+    render();
+
+    toast(
+      "Local data cleared"
+    );
+
+  }
+
+};
+
+
+/* =========================
+   INITIAL SETUP
+   ========================= */
+
+$("cancelEdit").onclick=
+  resetEntry;
+
+$("apiUrl").value=
+  localStorage.getItem(URLKEY)||"";
+
+$("date").value=
+  today();
+
+persist();
+
+render();
+
+
+/* =========================
+   SERVICE WORKER
+   ========================= */
+
+if("serviceWorker" in navigator){
+
+  window.addEventListener(
+    "load",
+    ()=>navigator.serviceWorker
+      .register("sw.js")
+      .catch(()=>{})
+  );
+
+}
+
 </script>
+
 </body>
 </html>
