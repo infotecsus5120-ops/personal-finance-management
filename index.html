@@ -38,35 +38,30 @@ input,select,textarea{width:100%;border:1px solid var(--b);border-radius:10px;pa
 <div class="grid">
 <div class="card stat income"><div class="label">Total Income</div><div id="totalIncome" class="value">৳0</div></div>
 <div class="card stat expense"><div class="label">Total Expense</div><div id="totalExpense" class="value">৳0</div></div>
-<div class="card section">
-  <h2>Recent Records</h2>
-  <div id="recent"></div>
+<div class="card stat"><div class="label">Balance</div><div id="balance" class="value">৳0</div></div>
 </div>
-<div class="card section">
-<h2>📊 Monthly Report</h2>
+<div class="card section"><h2>Recent Records</h2><div id="recent"></div></div>
+</section>
 
-<div style="margin:12px 0">
-  <label class="label">Select Month</label>
- <input type="month" id="reportMonth" onchange="render()">
-</div>
+<section id="entry" class="page">
+<div class="card"><h2 id="entryTitle">New Entry</h2>
+<div id="editNotice" class="notice" style="display:none">আপনি একটি হিসাব Edit করছেন। Save করলে Google Sheets-এর Row আপডেট হবে।</div>
+<form id="entryForm"><input type="hidden" id="editId">
+<div class="two"><div><label>Type</label><select id="type" required><option value="Income">Income</option><option value="Expense">Expense</option></select></div><div><label>Date</label><input id="date" type="date" required></div></div>
+<div class="two"><div><label>Category</label><input id="category" placeholder="যেমন: Salary, Food" required></div><div><label>Amount (৳)</label><input id="amount" type="number" min="0" step="0.01" required></div></div>
+<div class="two"><div><label>Purpose</label><input id="purpose" placeholder="কী জন্য?" required></div><div><label>Source / Recipient</label><input id="party" placeholder="কার কাছ থেকে / কাকে"></div></div>
+<div><label>Note</label><textarea id="note" placeholder="অতিরিক্ত তথ্য"></textarea></div>
+<div class="actions"><button class="btn primary" type="submit" id="saveBtn">💾 Save Entry</button><button class="btn secondary" type="button" id="cancelEdit" style="display:none">Cancel Edit</button></div>
+</form></div>
+</section>
 
-<div class="two">
-    <div class="card stat income">
-      <div class="label">This Month Income</div>
-      <div id="monthIncome" class="value">৳0</div>
-    </div>
+<section id="records" class="page">
+<div class="card"><h2>All Records</h2>
+<div class="toolbar"><input id="search" placeholder="Search category, purpose, person..."><select id="filterType"><option value="">All Types</option><option value="Income">Income</option><option value="Expense">Expense</option></select><button class="btn secondary" id="refreshBtn">🔄 Refresh</button></div>
+<div class="table-wrap"><table><thead><tr><th>Date</th><th>Type</th><th>Category</th><th>Purpose</th><th>Source/Recipient</th><th>Amount</th><th>Action</th></tr></thead><tbody id="recordsBody"></tbody></table></div>
+</div></section>
 
-    <div class="card stat expense">
-      <div class="label">This Month Expense</div>
-      <div id="monthExpense" class="value">৳0</div>
-    </div>
-  </div>
-
-  <div class="card section">
-    <div class="label">This Month Balance</div>
-    <div id="monthBalance" class="value">৳0</div>
-  </div>
-</div>
+<section id="settings" class="page">
 <div class="card"><h2>Google Sheets Connection</h2><div class="notice">Google Apps Script Web App URL এখানে রাখুন।</div>
 <label>Apps Script Web App URL</label><input id="apiUrl" type="url" placeholder="https://script.google.com/macros/s/.../exec">
 <div class="actions" style="margin-top:11px"><button class="btn primary" id="saveSettings">Save Settings</button><button class="btn secondary" id="loadSheet">☁️ Load from Google Sheets</button></div>
@@ -78,47 +73,30 @@ input,select,textarea{width:100%;border:1px solid var(--b);border-radius:10px;pa
 <div id="editModal" class="modal"><div class="modal-box">
 <div class="modal-head"><h2 style="margin:0">Edit Record</h2><button class="close" id="closeModal">✕</button></div>
 <form id="editForm"><input type="hidden" id="mId">
+<div class="two"><div><label>Type</label><select id="mType"><option value="Income">Income</option><option value="Expense">Expense</option></select></div><div><label>Date</label><input id="mDate" type="date" required></div></div>
+<div class="two"><div><label>Category</label><input id="mCategory" required></div><div><label>Amount (৳)</label><input id="mAmount" type="number" min="0" step="0.01" required></div></div>
+<div class="two"><div><label>Purpose</label><input id="mPurpose" required></div><div><label>Source / Recipient</label><input id="mParty"></div></div>
+<div><label>Note</label><textarea id="mNote"></textarea></div>
+<div class="actions"><button class="btn primary" type="submit">💾 Update</button><button class="btn secondary" type="button" id="cancelModal">Cancel</button></div>
+</form></div></div>
+<div id="toast"></div>
+
 <script>
+const KEY="pfm_records_v1",URLKEY="pfm_api_url";
+let records=JSON.parse(localStorage.getItem(KEY)||"[]");
+const $=id=>document.getElementById(id), today=()=>new Date().toISOString().slice(0,10);
+const money=n=>"৳"+Number(n||0).toLocaleString("en-BD",{minimumFractionDigits:0,maximumFractionDigits:2});
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
+const typeOf=t=>String(t).toLowerCase()==="expense"||String(t)==="ব্যয়"?"Expense":"Income";
+function persist(){localStorage.setItem(KEY,JSON.stringify(records));$("localCount").textContent=records.length}
+function toast(m){let t=$("toast");t.textContent=m;t.classList.add("show");clearTimeout(window.tt);window.tt=setTimeout(()=>t.classList.remove("show"),2800)}
 function render(){
-  let inc=0,exp=0;
-
-  records.forEach(r=>{
-    if(typeOf(r.type)==="Income") inc+=Number(r.amount||0);
-    else exp+=Number(r.amount||0);
-  });
-
-  const selectedMonth=$("reportMonth").value ||
-    new Date().toISOString().slice(0,7);
-
-  let monthInc=0,monthExp=0;
-
-  records.forEach(r=>{
-    if(String(r.date||"").slice(0,7)===selectedMonth){
-      if(typeOf(r.type)==="Income") monthInc+=Number(r.amount||0);
-      else monthExp+=Number(r.amount||0);
-    }
-  });
-
-  $("totalIncome").textContent=money(inc);
-  $("totalExpense").textContent=money(exp);
-  $("monthIncome").textContent=money(monthInc);
-  $("monthExpense").textContent=money(monthExp);
-  $("monthBalance").textContent=money(monthInc-monthExp);
-  $("localCount").textContent=records.length;
-
-  $("recent").innerHTML=records.slice(0,5).map(r=>{
-    const t=typeOf(r.type);
-    const c=t.toLowerCase();
-
-    return `<div style="display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--b)">
-      <div>
-        <b>${esc(r.purpose||r.category||"Record")}</b>
-        <div class="small">${esc(r.date)} · ${esc(r.party)}</div>
-      </div>
-      <b class="amount ${c}">${t==="Income"?"+":"-"}${money(r.amount)}</b>
-    </div>`;
-  }).join("") || `<div class="empty">এখনও কোনো হিসাব নেই</div>`;
-
+ let inc=0,exp=0;records.forEach(r=>typeOf(r.type)==="Income"?inc+=+r.amount||0:exp+=+r.amount||0);
+ $("totalIncome").textContent=money(inc);$("totalExpense").textContent=money(exp);$("balance").textContent=money(inc-exp);$("localCount").textContent=records.length;
+ let q=$("search").value.trim().toLowerCase(),ft=$("filterType").value;
+ let arr=records.filter(r=>(!q||[r.date,r.type,r.category,r.purpose,r.party,r.note].join(" ").toLowerCase().includes(q))&&(!ft||typeOf(r.type)===ft));
+ $("recordsBody").innerHTML=arr.length?arr.map(r=>{let t=typeOf(r.type),c=t.toLowerCase();return `<tr><td>${esc(r.date)}</td><td><span class="pill ${c}">${t}</span></td><td>${esc(r.category)}</td><td>${esc(r.purpose)}</td><td>${esc(r.party)}</td><td class="amount ${c}">${money(r.amount)}</td><td><div class="actions"><button class="btn secondary" onclick="openEdit('${esc(r.id)}')">✏️ Edit</button><button class="btn danger" onclick="deleteRecord('${esc(r.id)}')">🗑️ Delete</button></div></td></tr>`}).join(""):`<tr><td colspan="7" class="empty">কোনো হিসাব পাওয়া যায়নি</td></tr>`;
+ $("recent").innerHTML=records.slice(0,5).map(r=>{let t=typeOf(r.type),c=t.toLowerCase();return `<div style="display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--b)"><div><b>${esc(r.purpose||r.category||"Record")}</b><div class="small">${esc(r.date)} · ${esc(r.party)}</div></div><b class="amount ${c}">${t==="Income"?"+":"-"}${money(r.amount)}</b></div>`}).join("")||`<div class="empty">এখনও কোনো হিসাব নেই</div>`;
 }
 async function apiGet(p){
  const url=localStorage.getItem(URLKEY);if(!url)return{ok:false,reason:"no-url"};
@@ -143,7 +121,7 @@ window.openEdit=id=>{let r=records.find(x=>String(x.id)===String(id));if(!r)retu
 function closeModal(){$("editModal").classList.remove("show")}$("closeModal").onclick=closeModal;$("cancelModal").onclick=closeModal;
 $("editForm").onsubmit=async e=>{e.preventDefault();let id=$("mId").value,old=records.find(x=>String(x.id)===String(id));if(!old)return;let r={id,date:$("mDate").value,type:$("mType").value,category:$("mCategory").value.trim(),purpose:$("mPurpose").value.trim(),party:$("mParty").value.trim(),amount:Number($("mAmount").value),note:$("mNote").value.trim(),createdAt:old.createdAt||new Date().toISOString()};let x=await updateSheet(r);if(x.ok){let i=records.findIndex(z=>String(z.id)===String(id));if(i>=0)records[i]=r;persist();render();closeModal();toast("Record updated ✓")}else toast("Google Sheets-এ Update করা যায়নি")};
 window.deleteRecord=async id=>{let r=records.find(x=>String(x.id)===String(id));if(!r)return;if(!confirm(`এই হিসাবটি Delete করতে চান?\n\n${r.date} — ${r.category} — ${money(r.amount)}`))return;let x=await deleteSheet(id);if(x.ok){records=records.filter(z=>String(z.id)!==String(id));persist();render();toast("Record deleted ✓")}else toast("Google Sheets থেকে Delete করা যায়নি")};
-
+$("search").oninput=render;$("filterType").onchange=render;$("refreshBtn").onclick=loadFromSheet;
 $("saveSettings").onclick=()=>{localStorage.setItem(URLKEY,$("apiUrl").value.trim());toast("Settings saved ✓")};
 async function loadFromSheet(){if(!localStorage.getItem(URLKEY)){toast("Settings-এ Web App URL দিন");showPage("settings");return}let x=await apiGet({});if(Array.isArray(x.records)){records=x.records;persist();render();toast("Google Sheets থেকে loaded ✓")}else toast("Load failed — local data দেখানো হচ্ছে")}
 $("loadSheet").onclick=loadFromSheet;
