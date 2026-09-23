@@ -78,11 +78,7 @@ input,select,textarea{width:100%;border:1px solid var(--b);border-radius:10px;pa
 <div id="editModal" class="modal"><div class="modal-box">
 <div class="modal-head"><h2 style="margin:0">Edit Record</h2><button class="close" id="closeModal">✕</button></div>
 <form id="editForm"><input type="hidden" id="mId">
-<div class="two"><div><label>Type</label><select id="mType"><option value="Income">Income</option><option value="Expense">Expense</option></select></div><div><label>Date</label><input id="mDate" type="date" required></div></div>
-<div class="two"><div><label>Category</label><input id="mCategory" required></div><div><label>Amount (৳)</label><input id="mAmount" type="number" min="0" step="0.01" required></div></div>
-<div class="two"><div><label>Purpose</label><input id="mPurpose" required></div><div><label>Source / Recipient</label><input id="mParty"></div></div>
-<div><label>Note</label><textarea id="mNote"></textarea></div>
-<div class="actions"><button class="btn primary" type="submit">💾 Update</button><button class="btn secondary" type="button" id="cancelModal">Cancel</button></div>
+<script>
 function render(){
   let inc=0,exp=0;
 
@@ -105,16 +101,14 @@ function render(){
 
   $("totalIncome").textContent=money(inc);
   $("totalExpense").textContent=money(exp);
-
   $("monthIncome").textContent=money(monthInc);
   $("monthExpense").textContent=money(monthExp);
   $("monthBalance").textContent=money(monthInc-monthExp);
-
   $("localCount").textContent=records.length;
 
   $("recent").innerHTML=records.slice(0,5).map(r=>{
-    let t=typeOf(r.type);
-    let c=t.toLowerCase();
+    const t=typeOf(r.type);
+    const c=t.toLowerCase();
 
     return `<div style="display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--b)">
       <div>
@@ -124,17 +118,7 @@ function render(){
       <b class="amount ${c}">${t==="Income"?"+":"-"}${money(r.amount)}</b>
     </div>`;
   }).join("") || `<div class="empty">এখনও কোনো হিসাব নেই</div>`;
-}
-    let t=typeOf(r.type),c=t.toLowerCase();
 
-    return `<div style="display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--b)">
-      <div>
-        <b>${esc(r.purpose||r.category||"Record")}</b>
-        <div class="small">${esc(r.date)} · ${esc(r.party)}</div>
-      </div>
-      <b class="amount ${c}">${t==="Income"?"+":"-"}${money(r.amount)}</b>
-    </div>`;
-  }).join("")||`<div class="empty">এখনও কোনো হিসাব নেই</div>`;
 }
 async function apiGet(p){
  const url=localStorage.getItem(URLKEY);if(!url)return{ok:false,reason:"no-url"};
