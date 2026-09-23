@@ -32,17 +32,36 @@ input,select,textarea{width:100%;border:1px solid var(--b);border-radius:10px;pa
 <button class="nav" data-page="entry">➕ New Entry</button>
 <button class="nav" data-page="records">📋 Records</button>
 <button class="nav" data-page="settings">⚙️ Settings</button>
-</nav>
-
 <section id="dashboard" class="page active">
 <div class="grid">
 <div class="card stat income"><div class="label">Total Income</div><div id="totalIncome" class="value">৳0</div></div>
 <div class="card stat expense"><div class="label">Total Expense</div><div id="totalExpense" class="value">৳0</div></div>
 <div class="card stat"><div class="label">Balance</div><div id="balance" class="value">৳0</div></div>
 </div>
-<div class="card section"><h2>Recent Records</h2><div id="recent"></div></div>
-</section>
 
+<div class="card section">
+<h2>Recent Records</h2>
+<div id="recent"></div>
+</div>
+
+<div class="card section">
+<h2>Monthly Report</h2>
+<div class="grid">
+<div class="card stat income">
+<div class="label">This Month Income</div>
+<div id="monthIncome" class="value">৳0</div>
+</div>
+<div class="card stat expense">
+<div class="label">This Month Expense</div>
+<div id="monthExpense" class="value">৳0</div>
+</div>
+<div class="card stat">
+<div class="label">This Month Balance</div>
+<div id="monthBalance" class="value">৳0</div>
+</div>
+</div>
+</div>
+</section>
 <section id="entry" class="page">
 <div class="card"><h2 id="entryTitle">New Entry</h2>
 <div id="editNotice" class="notice" style="display:none">আপনি একটি হিসাব Edit করছেন। Save করলে Google Sheets-এর Row আপডেট হবে।</div>
@@ -91,8 +110,27 @@ const typeOf=t=>String(t).toLowerCase()==="expense"||String(t)==="ব্যয়"?
 function persist(){localStorage.setItem(KEY,JSON.stringify(records));$("localCount").textContent=records.length}
 function toast(m){let t=$("toast");t.textContent=m;t.classList.add("show");clearTimeout(window.tt);window.tt=setTimeout(()=>t.classList.remove("show"),2800)}
 function render(){
- let inc=0,exp=0;records.forEach(r=>typeOf(r.type)==="Income"?inc+=+r.amount||0:exp+=+r.amount||0);
- $("totalIncome").textContent=money(inc);$("totalExpense").textContent=money(exp);$("balance").textContent=money(inc-exp);$("localCount").textContent=records.length;
+ let inc=0,exp=0;
+ records.forEach(r=>typeOf(r.type)==="Income"?inc+=+r.amount||0:exp+=+r.amount||0);
+
+ const now=new Date();
+ const currentMonth=now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0");
+ let monthInc=0,monthExp=0;
+
+ records.forEach(r=>{
+   if(String(r.date||"").slice(0,7)===currentMonth){
+     if(typeOf(r.type)==="Income") monthInc+=+r.amount||0;
+     else monthExp+=+r.amount||0;
+   }
+ });
+
+ $("totalIncome").textContent=money(inc);
+ $("totalExpense").textContent=money(exp);
+ $("balance").textContent=money(inc-exp);
+ $("monthIncome").textContent=money(monthInc);
+ $("monthExpense").textContent=money(monthExp);
+ $("monthBalance").textContent=money(monthInc-monthExp);
+ $("localCount").textContent=records.length;
  let q=$("search").value.trim().toLowerCase(),ft=$("filterType").value;
  let arr=records.filter(r=>(!q||[r.date,r.type,r.category,r.purpose,r.party,r.note].join(" ").toLowerCase().includes(q))&&(!ft||typeOf(r.type)===ft));
  $("recordsBody").innerHTML=arr.length?arr.map(r=>{let t=typeOf(r.type),c=t.toLowerCase();return `<tr><td>${esc(r.date)}</td><td><span class="pill ${c}">${t}</span></td><td>${esc(r.category)}</td><td>${esc(r.purpose)}</td><td>${esc(r.party)}</td><td class="amount ${c}">${money(r.amount)}</td><td><div class="actions"><button class="btn secondary" onclick="openEdit('${esc(r.id)}')">✏️ Edit</button><button class="btn danger" onclick="deleteRecord('${esc(r.id)}')">🗑️ Delete</button></div></td></tr>`}).join(""):`<tr><td colspan="7" class="empty">কোনো হিসাব পাওয়া যায়নি</td></tr>`;
