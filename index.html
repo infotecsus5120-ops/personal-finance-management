@@ -846,11 +846,29 @@ const currentMonthKey=
 
   records.forEach(r=>{
 
-    const recordDate=
-      String(r.date||"");
+  const recordDate=
+  String(r.date||"");
 
-    const recordMonth=
-      recordDate.slice(0,7);
+let recordMonth="";
+
+if(/^\d{4}-\d{2}/.test(recordDate)){
+
+  recordMonth=
+    recordDate.slice(0,7);
+
+}else{
+
+  const d=new Date(recordDate);
+
+  if(!isNaN(d)){
+
+    recordMonth=
+      d.getFullYear()+"-"+
+      String(d.getMonth()+1).padStart(2,"0");
+
+  }
+
+}
 
 
     if(recordMonth===currentMonthKey){
