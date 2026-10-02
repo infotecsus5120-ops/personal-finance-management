@@ -967,7 +967,74 @@ if(/^\d{4}-\d{2}/.test(recordDate)){
     money(monthExp);
 
   $("monthBalance").textContent=
-    money(monthInc-monthExp);
+    money(monthInc-monthExp);  /* Category-wise Summary */
+
+  const categoryMap = {};
+
+  monthRecords.forEach(r => {
+
+    const category = String(r.category || "অন্যান্য");
+    const type = typeOf(r.type);
+    const amount = Number(r.amount) || 0;
+
+    const key = type + "|" + category;
+
+    if (!categoryMap[key]) {
+      categoryMap[key] = {
+        type: type,
+        category: category,
+        amount: 0
+      };
+    }
+
+    categoryMap[key].amount += amount;
+
+  });
+
+  const categoryRows = Object.values(categoryMap);
+
+  if (!categoryRows.length) {
+
+    $("categorySummaryBody").innerHTML =
+      `<tr>
+        <td colspan="3" style="text-align:center;padding:15px;">
+          No category data found for this month.
+        </td>
+      </tr>`;
+
+  } else {
+
+    $("categorySummaryBody").innerHTML =
+      categoryRows.map(item => {
+
+        const isIncome =
+          item.type === "Income";
+
+        return `
+          <tr style="border-bottom:1px solid #e5e7eb;">
+
+            <td style="padding:10px;">
+              <strong style="color:${isIncome ? 'green' : 'red'};">
+                ${isIncome ? '🟢 আয়' : '🔴 ব্যয়'}
+              </strong>
+            </td>
+
+            <td style="padding:10px;">
+              ${item.category}
+            </td>
+
+            <td style="padding:10px;text-align:right;">
+              <strong style="color:${isIncome ? 'green' : 'red'};">
+                ${isIncome ? '+' : '-'}৳${item.amount.toLocaleString()}
+              </strong>
+            </td>
+
+          </tr>
+        `;
+
+      }).join("");
+
+  }
   /* Monthly Details */
 
   const monthlyDetails = $("monthlyDetails");
