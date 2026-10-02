@@ -449,9 +449,31 @@ th{
 
   <h2>📋 Monthly Details</h2>
 
-  <div id="monthlyDetails">
-    <p>No records found for this month.</p>
+ <div id="monthlyDetails">
+
+  <div style="overflow-x:auto;">
+
+    <table style="width:100%;border-collapse:collapse;">
+
+      <thead>
+        <tr>
+          <th>তারিখ</th>
+          <th>ধরন</th>
+          <th>খাত</th>
+          <th>উদ্দেশ্য</th>
+          <th>Source / Recipient</th>
+          <th>টাকা</th>
+        </tr>
+      </thead>
+
+      <tbody id="monthlyDetailsBody">
+      </tbody>
+
+    </table>
+
   </div>
+
+</div>
 
 </div>
 </section>
@@ -946,29 +968,56 @@ if(/^\d{4}-\d{2}/.test(recordDate)){
     return recordMonth === currentMonthKey;
   });
 
-  if (!monthRecords.length) {
+ if (!monthRecords.length) {
 
-    monthlyDetails.innerHTML =
-      "<p>No records found for this month.</p>";
+  $("monthlyDetailsBody").innerHTML =
+    `<tr>
+       <td colspan="6" style="text-align:center;padding:15px;">
+         No records found for this month.
+       </td>
+     </tr>`;
 
-  } else {
+} else {
 
-    monthlyDetails.innerHTML =
-      monthRecords.map(r => {
+  $("monthlyDetailsBody").innerHTML =
+    monthRecords.map(r => {
 
-        const sign =
-          typeOf(r.type) === "Income" ? "+" : "-";
+      const isIncome =
+        typeOf(r.type) === "Income";
 
-        return `
-          <div style="padding:10px 0;border-bottom:1px solid #ddd;">
-            <b>${r.date || ""}</b><br>
-            ${r.category || ""} - ${r.purpose || ""}<br>
-            ${r.party || ""}<br>
-            <strong>${sign}৳${Number(r.amount || 0).toLocaleString()}</strong>
-          </div>
-        `;
+      const sign =
+        isIncome ? "+" : "-";
 
-      }).join("");
+      return `
+        <tr>
+          <td>${r.date || ""}</td>
+
+          <td>
+            ${r.type || ""}
+          </td>
+
+          <td>
+            ${r.category || ""}
+          </td>
+
+          <td>
+            ${r.purpose || ""}
+          </td>
+
+          <td>
+            ${r.party || ""}
+          </td>
+
+          <td>
+            <strong>
+              ${sign}৳${Number(r.amount || 0).toLocaleString()}
+            </strong>
+          </td>
+        </tr>
+      `;
+
+    }).join("");
+}
   }
 
   /* Local record count */
