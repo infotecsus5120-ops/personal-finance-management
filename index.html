@@ -913,7 +913,54 @@ if(/^\d{4}-\d{2}/.test(recordDate)){
 
   $("monthBalance").textContent=
     money(monthInc-monthExp);
+  /* Monthly Details */
 
+  const monthlyDetails = $("monthlyDetails");
+
+  const monthRecords = records.filter(r => {
+
+    const recordDate = String(r.date || "");
+    let recordMonth = "";
+
+    if (/^\d{4}-\d{2}/.test(recordDate)) {
+      recordMonth = recordDate.slice(0,7);
+    } else {
+      const d = new Date(recordDate);
+
+      if (!isNaN(d)) {
+        recordMonth =
+          d.getFullYear() + "-" +
+          String(d.getMonth()+1).padStart(2,"0");
+      }
+    }
+
+    return recordMonth === currentMonthKey;
+  });
+
+  if (!monthRecords.length) {
+
+    monthlyDetails.innerHTML =
+      "<p>No records found for this month.</p>";
+
+  } else {
+
+    monthlyDetails.innerHTML =
+      monthRecords.map(r => {
+
+        const sign =
+          typeOf(r.type) === "Income" ? "+" : "-";
+
+        return `
+          <div style="padding:10px 0;border-bottom:1px solid #ddd;">
+            <b>${r.date || ""}</b><br>
+            ${r.category || ""} - ${r.purpose || ""}<br>
+            ${r.party || ""}<br>
+            <strong>${sign}৳${Number(r.amount || 0).toLocaleString()}</strong>
+          </div>
+        `;
+
+      }).join("");
+  }
 
   /* Local record count */
 
